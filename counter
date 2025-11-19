@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.btn_start);
         btnStop = findViewById(R.id.btn_stop);
 
-        // START → begin loop
+     
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // STOP → stop loop
+       
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Title -->
+   
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="40dp"/>
 
-    <!-- Counter Value -->
+
     <TextView
         android:id="@+id/counter_text"
         android:layout_width="wrap_content"
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="50dp"/>
 
-    <!-- START Button -->
+
     <Button
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         android:layout_marginTop="60dp"
         android:layout_marginStart="60dp"/>
 
-    <!-- STOP Button -->
+
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
