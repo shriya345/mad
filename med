@@ -225,3 +225,6 @@ public class DataBaseConn extends SQLiteOpenHelper {
         );
     }
 }
+
+
+https://chatgpt.com/share/691d73fe-0e28-8001-99f2-299f346048f1
