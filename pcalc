@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simple Calc"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:id="@+id/num1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Number 1"
+        android:inputType="number"
+        android:layout_below="@id/title"
+        android:layout_marginTop="20dp"/>
+
+    <EditText
+        android:id="@+id/num2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Number 2"
+        android:inputType="number"
+        android:layout_below="@id/num1"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result:"
+        android:textSize="20sp"
+        android:layout_below="@id/num2"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:text="Add"
+        android:layout_below="@id/result"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/sub"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:text="Sub"
+        android:layout_below="@id/result"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/mul"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:text="Mul"
+        android:layout_below="@id/add"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/div"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:text="Div"
+        android:layout_below="@id/sub"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>
+
+
+
+
+package com.example.helor1;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText num1, num2;
+    TextView result;
+    Button add, sub, mul, div;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        num1 = findViewById(R.id.num1);
+        num2 = findViewById(R.id.num2);
+        result = findViewById(R.id.result);
+        add = findViewById(R.id.add);
+        sub = findViewById(R.id.sub);
+        mul = findViewById(R.id.mul);
+        div = findViewById(R.id.div);
+
+        add.setOnClickListener(v -> calc("+"));
+        sub.setOnClickListener(v -> calc("-"));
+        mul.setOnClickListener(v -> calc("*"));
+        div.setOnClickListener(v -> calc("/"));
+    }
+
+    void calc(String op) {
+        float a = Float.parseFloat(num1.getText().toString());
+        float b = Float.parseFloat(num2.getText().toString());
+        float r = 0;
+
+        switch (op) {
+            case "+": r = a + b; break;
+            case "-": r = a - b; break;
+            case "*": r = a * b; break;
+            case "/": r = b == 0 ? 0 : a / b; break;
+        }
+
+        result.setText("Result: " + r);
+    }
+}
