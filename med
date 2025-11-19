@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Switch to toggle Insert / Fetch -->
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetch Mode"
+        android:textSize="18sp"/>
+
+    <!-- Label for Medicine Name -->
+    <TextView
+        android:id="@+id/medtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medicine Name:"
+        android:textSize="16sp"
+        android:paddingTop="15dp"/>
+
+    <!-- Medicine Name Input -->
+    <EditText
+        android:id="@+id/medicinename"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Medicine Name"
+        android:padding="10dp"
+        android:background="@android:drawable/edit_text"/>
+
+    <!-- Date Input -->
+    <EditText
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Date"
+        android:padding="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@android:drawable/edit_text"/>
+
+    <!-- Spinner for Time -->
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"/>
+
+    <!-- Insert Button -->
+    <Button
+        android:id="@+id/insert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert Data"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Fetch Button (hidden by default in Java code) -->
+    <Button
+        android:id="@+id/fetch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fetch Data"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
+
+
+package com.example.med;
+
+import android.os.Bundle;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import android.database.Cursor;
+import android.view.View;
+import android.widget.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText medname, meddate;
+    Button insert, fetch;
+    Spinner day;
+    Switch modeSwitch;
+    TextView medtxt;
+    DataBaseConn db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        // UI elements
+        medname = findViewById(R.id.medicinename);
+        meddate = findViewById(R.id.date);
+        insert = findViewById(R.id.insert);
+        fetch = findViewById(R.id.fetch);
+        day = findViewById(R.id.spinner);
+        modeSwitch = findViewById(R.id.switch1);
+        medtxt = findViewById(R.id.medtext);
+
+        db = new DataBaseConn(this);
+
+        // Default mode = Insert mode
+        fetch.setVisibility(View.INVISIBLE);
+
+        // Switch toggle
+        modeSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                // Fetch mode
+                insert.setVisibility(View.INVISIBLE);
+                medname.setVisibility(View.INVISIBLE);
+                medtxt.setVisibility(View.INVISIBLE);
+                fetch.setVisibility(View.VISIBLE);
+            } else {
+                // Insert mode
+                fetch.setVisibility(View.INVISIBLE);
+                insert.setVisibility(View.VISIBLE);
+                medname.setVisibility(View.VISIBLE);
+                medtxt.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Insert Button
+        insert.setOnClickListener(v -> {
+            String name = medname.getText().toString().trim();
+            String date = meddate.getText().toString().trim();
+            String time = day.getSelectedItem().toString().trim();
+
+            boolean ok = db.insertvalues(name, date, time);
+
+            if (ok) {
+                Toast.makeText(this, "Data Inserted", Toast.LENGTH_LONG).show();
+                medname.setText("");
+                meddate.setText("");
+            } else {
+                Toast.makeText(this, "Insert Failed", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Fetch Button
+        fetch.setOnClickListener(v -> {
+            String date = meddate.getText().toString().trim();
+            String time = day.getSelectedItem().toString().trim();
+
+            try (Cursor c = db.FetchData(date, time)) {
+                if (c != null && c.moveToFirst()) {
+                    StringBuilder sb = new StringBuilder();
+                    do {
+                        sb.append(c.getString(0)).append("\n");
+                    } while (c.moveToNext());
+
+                    Toast.makeText(this, sb.toString(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "No Records Found", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Err: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+}
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+package com.example.med;
+
+import android.content.*;
+import android.database.Cursor;
+import android.database.sqlite.*;
+
+public class DataBaseConn extends SQLiteOpenHelper {
+
+    public DataBaseConn(Context ctx) {
+        super(ctx, "Medicinedb", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE MDTable(" +
+                "MedicineName TEXT, " +
+                "med_date TEXT, " +
+                "med_time TEXT)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        db.execSQL("DROP TABLE IF EXISTS MDTable");
+        onCreate(db);
+    }
+
+    public boolean insertvalues(String name, String date, String time) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("MedicineName", name);
+        cv.put("med_date", date);
+        cv.put("med_time", time);
+
+        return db.insert("MDTable", null, cv) != -1;
+    }
+
+    public Cursor FetchData(String date, String time) {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.query(
+                "MDTable",
+                new String[]{"MedicineName"},
+                "med_date = ? AND med_time = ?",
+                new String[]{date, time},
+                null, null, null
+        );
+    }
+}
