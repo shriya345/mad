@@ -1,131 +1,160 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dp">
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Simple Calc"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"/>
-
-    <EditText
-        android:id="@+id/num1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Number 1"
-        android:inputType="number"
-        android:layout_below="@id/title"
-        android:layout_marginTop="20dp"/>
-
-    <EditText
-        android:id="@+id/num2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Number 2"
-        android:inputType="number"
-        android:layout_below="@id/num1"
-        android:layout_marginTop="10dp"/>
-
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Result:"
-        android:textSize="20sp"
-        android:layout_below="@id/num2"
-        android:layout_marginTop="20dp"/>
-
-    <Button
-        android:id="@+id/add"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:text="Add"
-        android:layout_below="@id/result"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentStart="true"/>
-
-    <Button
-        android:id="@+id/sub"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:text="Sub"
-        android:layout_below="@id/result"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
-
-    <Button
-        android:id="@+id/mul"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:text="Mul"
-        android:layout_below="@id/add"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentStart="true"/>
-
-    <Button
-        android:id="@+id/div"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:text="Div"
-        android:layout_below="@id/sub"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
-
-</RelativeLayout>
-
-
-
-
-package com.example.helor1;
+package com.example.calcer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText num1, num2;
-    TextView result;
-    Button add, sub, mul, div;
+    private TextView tv_result;
+    private double num1 = 0, num2 = 0;
+    private String operator = "";
+    private boolean newNumber = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        num1 = findViewById(R.id.num1);
-        num2 = findViewById(R.id.num2);
-        result = findViewById(R.id.result);
-        add = findViewById(R.id.add);
-        sub = findViewById(R.id.sub);
-        mul = findViewById(R.id.mul);
-        div = findViewById(R.id.div);
+        tv_result = findViewById(R.id.tv_result);
 
-        add.setOnClickListener(v -> calc("+"));
-        sub.setOnClickListener(v -> calc("-"));
-        mul.setOnClickListener(v -> calc("*"));
-        div.setOnClickListener(v -> calc("/"));
+        setNumberClick(R.id.btn0, "0");
+        setNumberClick(R.id.btn1, "1");
+        setNumberClick(R.id.btn2, "2");
+        setNumberClick(R.id.btn3, "3");
+        setNumberClick(R.id.btn4, "4");
+        setNumberClick(R.id.btn5, "5");
+        setNumberClick(R.id.btn6, "6");
+        setNumberClick(R.id.btn7, "7");
+        setNumberClick(R.id.btn8, "8");
+        setNumberClick(R.id.btn9, "9");
+
+        setOperatorClick(R.id.btnAdd, "+");
+        setOperatorClick(R.id.btnSub, "-");
+        setOperatorClick(R.id.btnMul, "*");
+        setOperatorClick(R.id.btnDiv, "/");
+
+        findViewById(R.id.btnEqual).setOnClickListener(v -> calculate());
     }
 
-    void calc(String op) {
-        float a = Float.parseFloat(num1.getText().toString());
-        float b = Float.parseFloat(num2.getText().toString());
-        float r = 0;
+    private void setNumberClick(int id, final String number) {
+        findViewById(id).setOnClickListener(v -> {
+            if (newNumber) {
+                tv_result.setText(number);
+                newNumber = false;
+            } else {
+                tv_result.append(number);
+            }
+        });
+    }
 
-        switch (op) {
-            case "+": r = a + b; break;
-            case "-": r = a - b; break;
-            case "*": r = a * b; break;
-            case "/": r = b == 0 ? 0 : a / b; break;
+    private void setOperatorClick(int id, final String op) {
+        findViewById(id).setOnClickListener(v -> {
+            num1 = Double.parseDouble(tv_result.getText().toString());
+            operator = op;
+            newNumber = true;
+        });
+    }
+
+    private void calculate() {
+        num2 = Double.parseDouble(tv_result.getText().toString());
+        double result = 0;
+
+        switch (operator) {
+            case "+": result = num1 + num2; break;
+            case "-": result = num1 - num2; break;
+            case "*": result = num1 * num2; break;
+            case "/":
+                if (num2 != 0) result = num1 / num2;
+                else tv_result.setText("Error");
+                break;
         }
 
-        result.setText("Result: " + r);
+        tv_result.setText(String.valueOf(result));
+        newNumber = true;
     }
 }
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="20dp"
+    android:background="#C6F68D">
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="36sp"
+        android:textColor="#000000"
+        android:gravity="end"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp" />
+
+    <!-- Row 1 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button android:id="@+id/btn1" android:layout_width="70dp" android:layout_height="70dp" android:text="1"/>
+        <Button android:id="@+id/btn2" android:layout_width="70dp" android:layout_height="70dp" android:text="2" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btn3" android:layout_width="70dp" android:layout_height="70dp" android:text="3" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btn4" android:layout_width="70dp" android:layout_height="70dp" android:text="4" android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <!-- Row 2 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <Button android:id="@+id/btn5" android:layout_width="70dp" android:layout_height="70dp" android:text="5"/>
+        <Button android:id="@+id/btn6" android:layout_width="70dp" android:layout_height="70dp" android:text="6" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btn7" android:layout_width="70dp" android:layout_height="70dp" android:text="7" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btn8" android:layout_width="70dp" android:layout_height="70dp" android:text="8" android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <!-- Row 3 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <Button android:id="@+id/btn9" android:layout_width="70dp" android:layout_height="70dp" android:text="9"/>
+        <Button android:id="@+id/btn0" android:layout_width="70dp" android:layout_height="70dp" android:text="0" android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <!-- Operations Row -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp">
+        <Button android:id="@+id/btnAdd" android:layout_width="70dp" android:layout_height="70dp" android:text="+"/>
+        <Button android:id="@+id/btnSub" android:layout_width="70dp" android:layout_height="70dp" android:text="-" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btnMul" android:layout_width="70dp" android:layout_height="70dp" android:text="*" android:layout_marginStart="10dp"/>
+        <Button android:id="@+id/btnDiv" android:layout_width="70dp" android:layout_height="70dp" android:text="/" android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <!-- Equal Button -->
+    <Button
+        android:id="@+id/btnEqual"
+        android:layout_width="80dp"
+        android:layout_height="70dp"
+        android:text="="
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
