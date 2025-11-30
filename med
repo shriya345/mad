@@ -1,73 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="15dp"
+    tools:context=".MainActivity">
 
-    <!-- Switch to toggle Insert / Fetch -->
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fetch Mode"
-        android:textSize="18sp"/>
-
-    <!-- Label for Medicine Name -->
-    <TextView
-        android:id="@+id/medtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Medicine Name:"
-        android:textSize="16sp"
-        android:paddingTop="15dp"/>
-
-    <!-- Medicine Name Input -->
-    <EditText
-        android:id="@+id/medicinename"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Medicine Name"
-        android:padding="10dp"
-        android:background="@android:drawable/edit_text"/>
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-    <!-- Date Input -->
-    <EditText
-        android:id="@+id/date"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MEDICINE DATABASE"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Date"
-        android:padding="10dp"
-        android:layout_marginTop="15dp"
-        android:background="@android:drawable/edit_text"/>
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-    <!-- Spinner for Time -->
-    <Spinner
-        android:id="@+id/spinner"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insert"
+            android:textSize="20sp"/>
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fetch"
+            android:textSize="20sp"
+            android:layout_marginStart="20dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
 
-    <!-- Insert Button -->
+        <TextView
+            android:id="@+id/medtext"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Medicine Name"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/medicinename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Medicine Name" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:hint="DD/MM/YYYY" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Time of Day"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/timeoftheday"/>
+    </LinearLayout>
+
     <Button
         android:id="@+id/insert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Insert Data"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="15dp"
+        android:text="INSERT" />
 
-    <!-- Fetch Button (hidden by default in Java code) -->
     <Button
         android:id="@+id/fetch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fetch Data"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="15dp"
+        android:text="FETCH" />
 
 </LinearLayout>
 
 
-package com.example.med;
+
+strings.xml
+
+<resources>
+    <string name="app_name">medicinerem</string>
+
+    <string-array name="timeoftheday">
+        <item>MORNING</item>
+        <item>AFTERNOON</item>
+        <item>EVENING</item>
+        <item>NIGHT</item>
+    </string-array>
+
+</resources>
+
+
+
+
+
+MainActivity.java
+
+
+package com.example.medicinereminder;
 
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
@@ -77,13 +158,12 @@ import android.view.View;
 import android.widget.*;
 
 public class MainActivity extends AppCompatActivity {
-
     EditText medname, meddate;
     Button insert, fetch;
     Spinner day;
-    Switch modeSwitch;
+    Switch switch1;
     TextView medtxt;
-    DataBaseConn db;
+    DataBaseConn dbconnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,72 +171,65 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // UI elements
         medname = findViewById(R.id.medicinename);
         meddate = findViewById(R.id.date);
         insert = findViewById(R.id.insert);
         fetch = findViewById(R.id.fetch);
         day = findViewById(R.id.spinner);
-        modeSwitch = findViewById(R.id.switch1);
+        switch1 = findViewById(R.id.switch1);
         medtxt = findViewById(R.id.medtext);
 
-        db = new DataBaseConn(this);
+        dbconnection = new DataBaseConn(this);
 
-        // Default mode = Insert mode
         fetch.setVisibility(View.INVISIBLE);
 
-        // Switch toggle
-        modeSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            if (isChecked) {
-                // Fetch mode
-                insert.setVisibility(View.INVISIBLE);
-                medname.setVisibility(View.INVISIBLE);
-                medtxt.setVisibility(View.INVISIBLE);
-                fetch.setVisibility(View.VISIBLE);
-            } else {
-                // Insert mode
+        switch1.setOnCheckedChangeListener((compoundButton, checked) -> {
+            if (!checked) { // Insert mode
                 fetch.setVisibility(View.INVISIBLE);
                 insert.setVisibility(View.VISIBLE);
                 medname.setVisibility(View.VISIBLE);
                 medtxt.setVisibility(View.VISIBLE);
+            } else { // Fetch mode
+                fetch.setVisibility(View.VISIBLE);
+                insert.setVisibility(View.INVISIBLE);
+                medname.setVisibility(View.INVISIBLE);
+                medtxt.setVisibility(View.INVISIBLE);
             }
         });
 
-        // Insert Button
-        insert.setOnClickListener(v -> {
+        insert.setOnClickListener(view -> {
             String name = medname.getText().toString().trim();
             String date = meddate.getText().toString().trim();
             String time = day.getSelectedItem().toString().trim();
 
-            boolean ok = db.insertvalues(name, date, time);
+            boolean insertResult = dbconnection.insertvalues(name, date, time);
 
-            if (ok) {
+            if (insertResult) {
                 Toast.makeText(this, "Data Inserted", Toast.LENGTH_LONG).show();
                 medname.setText("");
                 meddate.setText("");
             } else {
-                Toast.makeText(this, "Insert Failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Data Not Inserted", Toast.LENGTH_LONG).show();
             }
         });
 
-        // Fetch Button
-        fetch.setOnClickListener(v -> {
+        fetch.setOnClickListener(view -> {
             String date = meddate.getText().toString().trim();
             String time = day.getSelectedItem().toString().trim();
 
-            try (Cursor c = db.FetchData(date, time)) {
+            try (Cursor c = dbconnection.FetchData(date, time)) {
                 if (c != null && c.moveToFirst()) {
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder med = new StringBuilder();
                     do {
-                        sb.append(c.getString(0)).append("\n");
+                        med.append(c.getString(c.getColumnIndexOrThrow("MedicineName")))
+                                .append('\n');
                     } while (c.moveToNext());
-
-                    Toast.makeText(this, sb.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, med.toString(), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(this, "No Records Found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No Entries in Database", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(this, "Err: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "DB error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -164,30 +237,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+DataBaseConn.java
 
 
+package com.example.medicinereminder;
 
-
-package com.example.med;
-
-import android.content.*;
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.*;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataBaseConn extends SQLiteOpenHelper {
 
-    public DataBaseConn(Context ctx) {
-        super(ctx, "Medicinedb", null, 1);
+    public DataBaseConn(Context context) {
+        super(context, "Medicinedb", null, 2);
     }
 
     @Override
@@ -204,27 +268,22 @@ public class DataBaseConn extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertvalues(String name, String date, String time) {
-        SQLiteDatabase db = getWritableDatabase();
+    public boolean insertvalues(String medname, String meddate, String medtime) {
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("MedicineName", name);
-        cv.put("med_date", date);
-        cv.put("med_time", time);
+        cv.put("MedicineName", medname);
+        cv.put("med_date", meddate);
+        cv.put("med_time", medtime);
 
-        return db.insert("MDTable", null, cv) != -1;
+        long res = db.insert("MDTable", null, cv);
+        return res != -1;
     }
 
     public Cursor FetchData(String date, String time) {
-        SQLiteDatabase db = getReadableDatabase();
-        return db.query(
-                "MDTable",
-                new String[]{"MedicineName"},
-                "med_date = ? AND med_time = ?",
-                new String[]{date, time},
-                null, null, null
-        );
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] cols = {"MedicineName"};
+        String sel = "med_date = ? AND med_time = ?";
+        String[] args = {date.trim(), time.trim()};
+        return db.query("MDTable", cols, sel, args, null, null, null);
     }
 }
-
-
-https://chatgpt.com/share/691d73fe-0e28-8001-99f2-299f346048f1
